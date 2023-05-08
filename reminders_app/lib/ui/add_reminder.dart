@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:reminders_app/controllers/reminders_controller.dart';
+import 'package:reminders_app/controllers/reminderController.dart';
+// import 'package:reminders_app/controllers/reminders_controller.dart';
 import 'package:reminders_app/models/reminder.dart';
 import 'package:reminders_app/ui/button.dart';
 import 'package:reminders_app/ui/text_field.dart';
@@ -176,7 +177,8 @@ class _AddTaskState extends State<AddTask> {
   _validateDate() {
     if (titleController.text.isNotEmpty && noteController.text.isNotEmpty) {
       //add to database
-      _addToDB();
+
+      _addtoDB();
       Get.back();
       Get.snackbar('Reminder added', 'Reminder added successfully',
           snackPosition: SnackPosition.BOTTOM,
@@ -196,6 +198,21 @@ class _AddTaskState extends State<AddTask> {
             color: Colors.red,
           ));
     }
+  }
+
+  _addtoDB() async {
+    int value = await _reminderController.addReminder(
+        reminder: Reminder(
+            note: noteController.text,
+            title: titleController.text,
+            date: DateFormat.yMd().format(_selectedDate),
+            startTime: startTime,
+            endTime: endTime,
+            remind: addremind,
+            repeat: addrepeat,
+            color: colorpicker,
+            isComplete: 0));
+    print('My id is' + '$value');
   }
 
   _colorPicker() {
@@ -253,22 +270,6 @@ class _AddTaskState extends State<AddTask> {
         ),
       ],
     );
-  }
-
-  _addToDB() async {
-    int value = await _reminderController.addReminder(
-        reminder: Reminder(
-      note: noteController.text,
-      title: titleController.text,
-      date: DateFormat.yMd().format(_selectedDate),
-      startTime: startTime,
-      endTime: endTime,
-      remind: addremind,
-      repeat: addrepeat,
-      color: colorpicker,
-      isComplete: 0,
-    ));
-    print('Success to CREATE, My id is ' + ' $value');
   }
 
   _getCalendar() async {

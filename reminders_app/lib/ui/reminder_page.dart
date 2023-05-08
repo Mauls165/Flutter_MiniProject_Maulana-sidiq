@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:reminders_app/controllers/reminders_controller.dart';
+// import 'package:reminders_app/controllers/reminders_controller.dart';
 import 'package:reminders_app/ui/add_reminder.dart';
 import 'package:reminders_app/ui/button.dart';
 import 'package:reminders_app/ui/theme.dart';
@@ -16,7 +16,7 @@ class ReminderPage extends StatefulWidget {
 }
 
 class _ReminderPageState extends State<ReminderPage> {
-  final _reminderController = Get.put(ReminderController());
+  // final _reminderController = Get.put(ReminderController());
 
   @override
   Widget build(BuildContext context) {
@@ -26,29 +26,29 @@ class _ReminderPageState extends State<ReminderPage> {
         children: [
           _addTask(),
           _dateBar(),
-          _remindercard(),
+          // _remindercard(),
         ],
       ),
     );
   }
 
-  _remindercard() {
-    return Expanded(child: Obx(() {
-      return ListView.builder(
-          itemCount: _reminderController.remindList.length,
-          itemBuilder: (_, index) {
-            print(_reminderController.remindList.length);
-            return Container(
-              width: 100,
-              height: 50,
-              color: Colors.green,
-              margin: const EdgeInsets.only(bottom: 10),
-              child:
-                  Text(_reminderController.remindList[index].title.toString()),
-            );
-          });
-    }));
-  }
+  // _remindercard() {
+  //   return Expanded(child: Obx(() {
+  //     return ListView.builder(
+  //         itemCount: _reminderController.remindList.length,
+  //         itemBuilder: (_, index) {
+  //           print(_reminderController.remindList.length);
+  //           return Container(
+  //             width: 100,
+  //             height: 50,
+  //             color: Colors.green,
+  //             margin: const EdgeInsets.only(bottom: 10),
+  //             child:
+  //                 Text(_reminderController.remindList[index].title.toString()),
+  //           );
+  //         });
+  //   }));
+  // }
 
   _dateBar() {
     DateTime _selectedDate = DateTime.now();
