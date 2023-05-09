@@ -4,10 +4,26 @@ import 'package:intl/intl.dart';
 import 'package:reminders_app/ui/box_menu.dart';
 import 'package:reminders_app/ui/reminder_page.dart';
 import 'package:reminders_app/ui/theme.dart';
+import '../services/notif_services.dart';
 import '../services/themeServices.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePage();
+}
+
+class _HomePage extends State<HomePage> {
+  var notifyHelper;
+  @override
+  void initState() {
+    // TODO: implement initState
+    notifyHelper = NotifyHelper();
+    notifyHelper.initializeNotification();
+    notifyHelper.requestIOSPermissions();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +38,9 @@ class HomePage extends StatelessWidget {
           _dateBox(),
           BoxMenu(
             title: 'Reminders',
-            onTap: () => Get.to(ReminderPage()),
+            onTap: () async {
+              await Get.to(ReminderPage());
+            },
           ),
           BoxMenu(
             title: 'Note',
@@ -64,7 +82,7 @@ class HomePage extends StatelessWidget {
                 child: Center(
                   child: Text(
                     'No Reminders today',
-                    style: subHeading,
+                    style: subHeading.copyWith(color: Colors.black),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -80,15 +98,15 @@ class HomePage extends StatelessWidget {
                   children: [
                     Text(
                       DateFormat.MMM().format(DateTime.now()),
-                      style: subHeading,
+                      style: subHeading.copyWith(color: Colors.black),
                     ),
                     Text(
                       DateFormat('dd').format(DateTime.now()),
-                      style: dateheading,
+                      style: dateheading.copyWith(color: Colors.black),
                     ),
                     Text(
                       DateFormat.EEEE().format(DateTime.now()),
-                      style: subHeading,
+                      style: subHeading.copyWith(color: Colors.black),
                     ),
                   ],
                 ),
@@ -132,8 +150,15 @@ class HomePage extends StatelessWidget {
   _appBar() {
     return AppBar(
       leading: GestureDetector(
-        onTap: () {
+        onTap: () async {
+          await notifyHelper.displayNotification(
+              title: 'Theme Change',
+              body: Get.isDarkMode
+                  ? 'Activate Light Theme'
+                  : 'Activated Dark Theme');
           ThemeServices().switchTheme();
+
+          //notifyHelper.scheduledNotification();
         },
         child: Icon(
           Get.isDarkMode ? Icons.wb_sunny_outlined : Icons.nightlight_outlined,

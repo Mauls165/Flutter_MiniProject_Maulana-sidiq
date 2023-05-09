@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:reminders_app/controllers/reminderController.dart';
+import 'package:reminders_app/db/db_helper.dart';
 // import 'package:reminders_app/controllers/reminders_controller.dart';
 import 'package:reminders_app/models/reminder.dart';
 import 'package:reminders_app/ui/button.dart';
+import 'package:reminders_app/ui/reminder_page.dart';
 import 'package:reminders_app/ui/text_field.dart';
 import 'package:reminders_app/ui/theme.dart';
 
@@ -20,8 +22,8 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  String endTime = DateFormat("kk:mm").format(DateTime.now()).toString();
-  String startTime = DateFormat("kk:mm").format(DateTime.now()).toString();
+  String endTime = DateFormat("dd:mm a").format(DateTime.now()).toString();
+  String startTime = DateFormat("dd:mm a").format(DateTime.now()).toString();
   int addremind = 5;
   List<int> remindList = [5, 10, 15, 20];
   String addrepeat = 'None';
@@ -201,18 +203,19 @@ class _AddTaskState extends State<AddTask> {
   }
 
   _addtoDB() async {
-    int value = await _reminderController.addReminder(
-        reminder: Reminder(
-            note: noteController.text,
-            title: titleController.text,
-            date: DateFormat.yMd().format(_selectedDate),
-            startTime: startTime,
-            endTime: endTime,
-            remind: addremind,
-            repeat: addrepeat,
-            color: colorpicker,
-            isComplete: 0));
-    print('My id is' + '$value');
+    final Reminder newReminder = Reminder(
+      title: titleController.text,
+      note: noteController.text,
+      isComplete: 0,
+      date: DateFormat.yMd().format(_selectedDate),
+      startTime: startTime,
+      endTime: endTime,
+      color: colorpicker,
+      remind: addremind,
+      repeat: addrepeat,
+    );
+    await _reminderController.insertReminder(newReminder);
+    print('Reminder inserted successfully.');
   }
 
   _colorPicker() {

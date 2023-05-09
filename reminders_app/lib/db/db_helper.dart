@@ -1,39 +1,60 @@
+import 'dart:async';
+import 'package:path/path.dart';
 import 'package:reminders_app/models/reminder.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DBHelper {
-  static Database? _db;
-  static final int version = 1;
-  static final String tabName = 'reminder';
+class DatabaseHelper {
+  static final DatabaseHelper _instance = DatabaseHelper.internal();
+  factory DatabaseHelper() => _instance;
 
-  static Future<void> initDB() async {
+  static Database? _db;
+  static const String tabName = 'reminder';
+
+  Future<Database> get db async {
     if (_db != null) {
-      return;
+      return _db!;
     }
-    try {
-      String path = await getDatabasesPath() + 'reminder.db';
-      _db = await openDatabase(
-        path,
-        version: version,
-        onCreate: (db, version) {
-          print('CREATING A NEW ONE');
-          return db.execute(
-            "CREATE TABLE $tabName("
-            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            "title STRING, note TEXT, date STRING,"
-            "startTime STRING, endTime STRING,"
-            "remind INTEGER, repeat STRING,"
-            "color INTEGER, isCompleted INTEGER)",
-          );
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
+    _db = await initDb();
+    return _db!;
   }
 
-  static Future<int> insert(Reminder? reminder) async {
-    print('insert func called');
-    return await _db?.insert(tabName, reminder!.toJson()) ?? 1;
+  DatabaseHelper.internal();
+
+  Future<Database> initDb() async {
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, 'reminder.db');
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute('''
+          CREATE TABLE $tabName(
+            id INTEGER PRIMARY KEY,
+            title TEXT,
+            note TEXT,
+            isComplete INTEGER,
+            date TEXT,
+            startTime TEXT,
+            endTime TEXT,
+            color INTEGER,
+            remind INTEGER,
+            repeat TEXT
+          )
+        ''');
+      },
+    );
+  }
+
+  static delete(Reminder reminder) async {
+    await _db!.delete(tabName, where: 'id=?', whereArgs: [reminder.id]);
+  }
+
+  static update(int id) async {
+    return await _db!.rawUpdate('''
+      UPDATE reminder
+      SET isComplete = ?
+      WHERE id = ?
+''', [1, id]);
   }
 }

@@ -1,12 +1,17 @@
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-// import 'package:reminders_app/controllers/reminders_controller.dart';
 import 'package:reminders_app/ui/add_reminder.dart';
 import 'package:reminders_app/ui/button.dart';
+import 'package:reminders_app/ui/task_tile.dart';
 import 'package:reminders_app/ui/theme.dart';
+// import 'package:intl/intl.dart';
+import '../controllers/reminderController.dart';
+import '../models/reminder.dart';
+import '../services/notif_services.dart';
 
 class ReminderPage extends StatefulWidget {
   const ReminderPage({super.key});
@@ -16,7 +21,26 @@ class ReminderPage extends StatefulWidget {
 }
 
 class _ReminderPageState extends State<ReminderPage> {
-  // final _reminderController = Get.put(ReminderController());
+  final ReminderController reminderController = ReminderController();
+  List<Reminder> _reminders = [];
+  DateTime _selectedDate = DateTime.now();
+  var notifyHelper;
+
+  @override
+  void initState() {
+    super.initState();
+    notifyHelper = NotifyHelper();
+    notifyHelper.initializeNotification();
+    notifyHelper.requestIOSPermissions();
+    loadReminders();
+  }
+
+  void loadReminders() async {
+    final List<Reminder> reminders = await reminderController.getReminders();
+    setState(() {
+      _reminders = reminders;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,32 +50,173 @@ class _ReminderPageState extends State<ReminderPage> {
         children: [
           _addTask(),
           _dateBar(),
-          // _remindercard(),
+          const SizedBox(
+            height: 10,
+          ),
+          _reminderlist(),
         ],
       ),
     );
   }
 
-  // _remindercard() {
-  //   return Expanded(child: Obx(() {
-  //     return ListView.builder(
-  //         itemCount: _reminderController.remindList.length,
-  //         itemBuilder: (_, index) {
-  //           print(_reminderController.remindList.length);
-  //           return Container(
-  //             width: 100,
-  //             height: 50,
-  //             color: Colors.green,
-  //             margin: const EdgeInsets.only(bottom: 10),
-  //             child:
-  //                 Text(_reminderController.remindList[index].title.toString()),
-  //           );
-  //         });
-  //   }));
-  // }
+  _reminderlist() {
+    loadReminders();
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _reminders.length,
+        itemBuilder: (BuildContext context, int index) {
+          final Reminder reminder = _reminders[index];
+          // return AnimationConfiguration.staggeredList(
+          //     position: index,
+          //     child: SlideAnimation(
+          //       child: FadeInAnimation(
+          //           child: Row(
+          //         children: [
+          //           GestureDetector(
+          //             onTap: () {
+          //               _showBottomSheed(context, reminder);
+          //             },
+          //             child: ReminderTile(reminder),
+          //           )
+          //         ],
+          //       )),
+          //     ));
+
+          if (reminder.repeat == 'Daily') {
+            DateTime date =
+                DateFormat.jm().parse(reminder.startTime.toString());
+            var myTime = DateFormat('HH:mm').format(date);
+            notifyHelper.scheduledNotification(
+                int.parse(myTime.toString().split(':')[0]),
+                int.parse(myTime.toString().split(':')[1]),
+                reminder);
+            return AnimationConfiguration.staggeredList(
+                position: index,
+                child: SlideAnimation(
+                  child: FadeInAnimation(
+                      child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheed(context, reminder);
+                        },
+                        child: ReminderTile(reminder),
+                      )
+                    ],
+                  )),
+                ));
+          }
+          if (reminder.date == DateFormat.yMd().format(_selectedDate)) {
+            return AnimationConfiguration.staggeredList(
+                position: index,
+                child: SlideAnimation(
+                  child: FadeInAnimation(
+                      child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheed(context, reminder);
+                        },
+                        child: ReminderTile(reminder),
+                      )
+                    ],
+                  )),
+                ));
+          } else {
+            return Container();
+          }
+        },
+      ),
+    );
+  }
+
+  _showBottomSheed(BuildContext context, Reminder reminder) {
+    Get.bottomSheet(Container(
+      padding: EdgeInsets.only(top: 4),
+      height: reminder.isComplete == 1
+          ? MediaQuery.of(context).size.height * 0.24
+          : MediaQuery.of(context).size.height * 0.32,
+      color: Get.isDarkMode ? Colors.grey[400] : Colors.white,
+      child: Column(
+        children: [
+          Container(
+            height: 6,
+            width: 120,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
+          ),
+          Spacer(),
+          reminder.isComplete == 1
+              ? Container()
+              : _bottomSheetButton(
+                  label: 'Task Completed',
+                  onTap: () {
+                    ReminderController.markCompleted(reminder.id!);
+                    loadReminders();
+                    Get.back();
+                  },
+                  clr: Colors.lightBlue,
+                  context: context),
+          _bottomSheetButton(
+              label: 'Delete Reminder',
+              onTap: () {
+                ReminderController.delete(reminder);
+                loadReminders();
+                Get.back();
+              },
+              clr: Colors.red[300]!,
+              context: context),
+          SizedBox(
+            height: 20,
+          ),
+          _bottomSheetButton(
+              label: 'Close',
+              onTap: () {
+                Get.back();
+              },
+              clr: Colors.red,
+              context: context),
+          SizedBox(height: 10)
+        ],
+      ),
+    ));
+  }
+
+  _bottomSheetButton({
+    required String label,
+    required Function()? onTap,
+    required Color clr,
+    bool isClose = false,
+    required BuildContext context,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        height: 55,
+        width: MediaQuery.of(context).size.width * 0.9,
+        decoration: BoxDecoration(
+          border: Border.all(
+              width: 2,
+              color: isClose == true
+                  ? Get.isDarkMode
+                      ? Colors.grey[600]!
+                      : Colors.grey[300]!
+                  : clr),
+          borderRadius: BorderRadius.circular(20),
+          color: isClose == true ? Colors.transparent : clr,
+        ),
+        child: Center(
+            child: Text(label,
+                style: isClose
+                    ? titleStyle
+                    : titleStyle.copyWith(color: Colors.white))),
+      ),
+    );
+  }
 
   _dateBar() {
-    DateTime _selectedDate = DateTime.now();
     return Container(
       margin: const EdgeInsets.only(top: 20),
       child: DatePicker(
@@ -74,7 +239,9 @@ class _ReminderPageState extends State<ReminderPage> {
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey),
         ),
         onDateChange: (date) {
-          _selectedDate = date;
+          setState(() {
+            _selectedDate = date;
+          });
         },
       ),
     );
@@ -100,8 +267,10 @@ class _ReminderPageState extends State<ReminderPage> {
           Button(
               label: "+ Add Task",
               onTap: () async {
+                loadReminders();
                 await Get.to(() => const AddTask());
-                // _reminderController.getReminders();
+
+                reminderController.getReminders();
               })
         ],
       ),
