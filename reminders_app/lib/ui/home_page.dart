@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:reminders_app/ui/box_menu.dart';
+import 'package:reminders_app/ui/note_page.dart';
 import 'package:reminders_app/ui/reminder_page.dart';
 import 'package:reminders_app/ui/theme.dart';
 import '../services/notif_services.dart';
@@ -44,12 +45,13 @@ class _HomePage extends State<HomePage> {
             },
           ),
           BoxMenu(
-            title: 'Note',
-            onTap: () => null,
-          ),
+              title: 'Note',
+              onTap: () async {
+                await Get.to(NotePage());
+              }),
           BoxMenu(
             title: 'Recomendation',
-            onTap: () => null,
+            onTap: () async {},
           ),
         ],
       ),

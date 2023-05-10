@@ -74,7 +74,8 @@ class _ReminderPageState extends State<ReminderPage> {
             var myTime = DateFormat('hh:mm', 'id_ID').format(date);
             notifyHelper.scheduledNotification(
                 hour: int.parse(myTime.toString().split(':')[0]),
-                minutes: int.parse(myTime.toString().split(':')[1]),
+                minutes:
+                    int.parse(myTime.toString().split(':')[1].split(' ')[0]),
                 reminder: reminder);
 
             return AnimationConfiguration.staggeredList(
