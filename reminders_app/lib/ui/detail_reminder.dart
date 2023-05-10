@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:reminders_app/ui/theme.dart';
-
 import '../models/reminder.dart';
 
 class DetailReminderPage extends StatelessWidget {
@@ -90,7 +87,7 @@ class DetailReminderPage extends StatelessWidget {
       case 1:
         return Colors.red;
       case 2:
-        return Colors.yellow;
+        return Colors.amber;
       default:
         return Colors.lightBlue;
     }

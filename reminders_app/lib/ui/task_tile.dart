@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reminders_app/models/reminder.dart';
@@ -95,7 +94,7 @@ class ReminderTile extends StatelessWidget {
       case 1:
         return Colors.red;
       case 2:
-        return Colors.yellow;
+        return Colors.amber;
       default:
         return Colors.lightBlue;
     }
