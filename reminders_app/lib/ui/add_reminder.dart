@@ -20,8 +20,7 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String endTime = '09:00 PM';
-  String startTime =
-      DateFormat("hh:mm a", "id_ID").format(DateTime.now()).toString();
+  String startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   int addremind = 5;
   List<int> remindList = [5, 10, 15, 20];
 
@@ -262,15 +261,6 @@ class _AddTaskState extends State<AddTask> {
           size: 20,
         ),
       ),
-      actions: const [
-        Icon(
-          Icons.person,
-          size: 20,
-        ),
-        SizedBox(
-          width: 20,
-        ),
-      ],
     );
   }
 

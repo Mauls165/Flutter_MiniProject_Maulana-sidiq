@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:reminders_app/models/reminder.dart';
+import 'package:reminders_app/ui/detail_reminder.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class NotifyHelper {
+  late final Reminder reminder;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin(); //
 
@@ -72,27 +74,28 @@ class NotifyHelper {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time);
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: '|{$reminder.title}|' + '{|$reminder.note}|');
   }
 
   tz.TZDateTime _converTime({required int hour, required int minutes}) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.getLocation('Asia/Jakarta'));
-    tz.TZDateTime scheduleDate = tz.TZDateTime(tz.getLocation('Asia/Jakarta'),
-        now.year, now.month, now.day, hour, minutes);
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduleDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minutes);
 
     if (scheduleDate.isBefore(now)) {
       scheduleDate = scheduleDate.add(const Duration(days: 1));
     }
-    final tz.Location wibLocation = tz.getLocation('Asia/Jakarta');
-    final tz.TZDateTime wibDateTime =
-        tz.TZDateTime.from(scheduleDate, wibLocation);
-    return wibDateTime;
+    // final tz.Location wibLocation = tz.getLocation('Asia/Jakarta');
+    // final tz.TZDateTime wibDateTime =
+    //     tz.TZDateTime.from(scheduleDate, wibLocation);
+    return scheduleDate;
   }
 
   Future<void> _configureLocalTimezone() async {
     tz.initializeTimeZones();
-    //final String timezone = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+    final String timezone = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timezone));
   }
 
   void requestIOSPermissions() {
@@ -112,9 +115,11 @@ class NotifyHelper {
     } else {
       print("Notification Done");
     }
-    Get.to(() => Container(
-          color: Colors.white,
-        ));
+    if (payload == 'Theme Change') {
+      print('Noting navigate');
+    } else {
+      Get.to(() => DetailReminderPage(reminder: reminder));
+    }
   }
 
   Future onDidReceiveLocalNotification(

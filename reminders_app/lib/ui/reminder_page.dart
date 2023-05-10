@@ -28,6 +28,7 @@ class _ReminderPageState extends State<ReminderPage> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     notifyHelper = NotifyHelper();
     notifyHelper.initializeNotification();
@@ -277,15 +278,6 @@ class _ReminderPageState extends State<ReminderPage> {
           size: 20,
         ),
       ),
-      actions: const [
-        Icon(
-          Icons.person,
-          size: 20,
-        ),
-        SizedBox(
-          width: 20,
-        ),
-      ],
     );
   }
 }

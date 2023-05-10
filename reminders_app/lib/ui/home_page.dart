@@ -131,10 +131,6 @@ class _HomePage extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hi //Username',
-              style: heading,
-            ),
-            Text(
               'how are you today?',
               style: subHeading,
             ),
@@ -167,15 +163,6 @@ class _HomePage extends State<HomePage> {
           // color: Get.isDarkMode ? Colors.white : Colors.black,
         ),
       ),
-      actions: const [
-        Icon(
-          Icons.person,
-          size: 20,
-        ),
-        SizedBox(
-          width: 20,
-        ),
-      ],
     );
   }
 }
