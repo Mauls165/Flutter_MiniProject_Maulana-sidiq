@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage> {
   var notifyHelper;
+
   @override
   void initState() {
     // TODO: implement initState

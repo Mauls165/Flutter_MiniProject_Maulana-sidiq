@@ -6,9 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:reminders_app/ui/add_reminder.dart';
 import 'package:reminders_app/ui/button.dart';
+import 'package:reminders_app/ui/detail_reminder.dart';
 import 'package:reminders_app/ui/task_tile.dart';
 import 'package:reminders_app/ui/theme.dart';
-// import 'package:intl/intl.dart';
 import '../controllers/reminderController.dart';
 import '../models/reminder.dart';
 import '../services/notif_services.dart';
@@ -66,30 +66,16 @@ class _ReminderPageState extends State<ReminderPage> {
         itemCount: _reminders.length,
         itemBuilder: (BuildContext context, int index) {
           final Reminder reminder = _reminders[index];
-          // return AnimationConfiguration.staggeredList(
-          //     position: index,
-          //     child: SlideAnimation(
-          //       child: FadeInAnimation(
-          //           child: Row(
-          //         children: [
-          //           GestureDetector(
-          //             onTap: () {
-          //               _showBottomSheed(context, reminder);
-          //             },
-          //             child: ReminderTile(reminder),
-          //           )
-          //         ],
-          //       )),
-          //     ));
 
           if (reminder.repeat == 'Daily') {
             DateTime date =
                 DateFormat.jm().parse(reminder.startTime.toString());
-            var myTime = DateFormat('HH:mm').format(date);
+            var myTime = DateFormat('hh:mm', 'id_ID').format(date);
             notifyHelper.scheduledNotification(
-                int.parse(myTime.toString().split(':')[0]),
-                int.parse(myTime.toString().split(':')[1]),
-                reminder);
+                hour: int.parse(myTime.toString().split(':')[0]),
+                minutes: int.parse(myTime.toString().split(':')[1]),
+                reminder: reminder);
+
             return AnimationConfiguration.staggeredList(
                 position: index,
                 child: SlideAnimation(
@@ -97,6 +83,9 @@ class _ReminderPageState extends State<ReminderPage> {
                       child: Row(
                     children: [
                       GestureDetector(
+                        onDoubleTap: () {
+                          Get.to(DetailReminderPage(reminder: reminder));
+                        },
                         onTap: () {
                           _showBottomSheed(context, reminder);
                         },

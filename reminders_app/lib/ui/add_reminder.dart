@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:reminders_app/controllers/reminderController.dart';
-import 'package:reminders_app/db/db_helper.dart';
-// import 'package:reminders_app/controllers/reminders_controller.dart';
 import 'package:reminders_app/models/reminder.dart';
 import 'package:reminders_app/ui/button.dart';
-import 'package:reminders_app/ui/reminder_page.dart';
 import 'package:reminders_app/ui/text_field.dart';
 import 'package:reminders_app/ui/theme.dart';
 
@@ -22,10 +19,12 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  String endTime = DateFormat("dd:mm a").format(DateTime.now()).toString();
-  String startTime = DateFormat("dd:mm a").format(DateTime.now()).toString();
+  String endTime = '09:00 PM';
+  String startTime =
+      DateFormat("hh:mm a", "id_ID").format(DateTime.now()).toString();
   int addremind = 5;
   List<int> remindList = [5, 10, 15, 20];
+
   String addrepeat = 'None';
   List<String> repeatList = ['None', 'Daily', 'Weekly', 'Monthly'];
   int colorpicker = 0;
@@ -99,7 +98,7 @@ class _AddTaskState extends State<AddTask> {
                 ],
               ),
               MyTextField(
-                  title: 'Remind me before',
+                  title: 'Remind me erly',
                   hint: '$addremind minutes early',
                   widget: DropdownButton(
                     icon: const Icon(

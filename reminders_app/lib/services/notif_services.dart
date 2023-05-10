@@ -53,12 +53,18 @@ class NotifyHelper {
     );
   }
 
-  scheduledNotification(int hour, int minutes, Reminder reminder) async {
+  scheduledNotification(
+      {required int hour,
+      required int minutes,
+      required Reminder reminder}) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
+        //0,
+        //'Test schedule notificatio',
+        //'5 detik setelah tombol di tekan'
         reminder.id!.toInt(),
         reminder.title,
         reminder.note,
-        _converTime(hour, minutes),
+        _converTime(hour: hour, minutes: minutes),
         //tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
         const NotificationDetails(
             android: AndroidNotificationDetails(
@@ -69,21 +75,24 @@ class NotifyHelper {
         matchDateTimeComponents: DateTimeComponents.time);
   }
 
-  tz.TZDateTime _converTime(int hour, int minutes) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduleDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minutes);
+  tz.TZDateTime _converTime({required int hour, required int minutes}) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.getLocation('Asia/Jakarta'));
+    tz.TZDateTime scheduleDate = tz.TZDateTime(tz.getLocation('Asia/Jakarta'),
+        now.year, now.month, now.day, hour, minutes);
 
     if (scheduleDate.isBefore(now)) {
       scheduleDate = scheduleDate.add(const Duration(days: 1));
     }
-    return scheduleDate;
+    final tz.Location wibLocation = tz.getLocation('Asia/Jakarta');
+    final tz.TZDateTime wibDateTime =
+        tz.TZDateTime.from(scheduleDate, wibLocation);
+    return wibDateTime;
   }
 
   Future<void> _configureLocalTimezone() async {
     tz.initializeTimeZones();
-    final String timezone = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timezone));
+    //final String timezone = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
   }
 
   void requestIOSPermissions() {
@@ -110,29 +119,6 @@ class NotifyHelper {
 
   Future onDidReceiveLocalNotification(
       int id, String? title, String? body, String? payload) async {
-    // display a dialog with the notification details, tap ok to go to another page
-    // showDialog(
-    //   //context: context,
-    //   builder: (BuildContext context) => CupertinoAlertDialog(
-    //     title: Text(title),
-    //     content: Text(body),
-    //     actions: [
-    //       CupertinoDialogAction(
-    //         isDefaultAction: true,
-    //         child: Text('Ok'),
-    //         onPressed: () async {
-    //           Navigator.of(context, rootNavigator: true).pop();
-    //           await Navigator.push(
-    //             context,
-    //             MaterialPageRoute(
-    //               builder: (context) => SecondScreen(payload),
-    //             ),
-    //           );
-    //         },
-    //       )
-    //     ],
-    //   ),
-    // );
     Get.dialog(Text('Welcom to futter'));
   }
 }

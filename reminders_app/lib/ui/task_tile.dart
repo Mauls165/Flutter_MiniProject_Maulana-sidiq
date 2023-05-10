@@ -27,7 +27,7 @@ class ReminderTile extends StatelessWidget {
               children: [
                 Text(
                   reminder?.title ?? "",
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.poppins(
                     textStyle: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -48,7 +48,7 @@ class ReminderTile extends StatelessWidget {
                     SizedBox(width: 4),
                     Text(
                       "${reminder!.startTime} - ${reminder!.endTime}",
-                      style: GoogleFonts.lato(
+                      style: GoogleFonts.poppins(
                         textStyle:
                             TextStyle(fontSize: 13, color: Colors.grey[100]),
                       ),
@@ -58,7 +58,7 @@ class ReminderTile extends StatelessWidget {
                 SizedBox(height: 12),
                 Text(
                   reminder?.note ?? "",
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.poppins(
                     textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
                   ),
                 ),
@@ -75,7 +75,7 @@ class ReminderTile extends StatelessWidget {
             quarterTurns: 3,
             child: Text(
               reminder!.isComplete == 1 ? "COMPLETED" : "TODO",
-              style: GoogleFonts.lato(
+              style: GoogleFonts.poppins(
                 textStyle: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
