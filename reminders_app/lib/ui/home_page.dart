@@ -5,6 +5,7 @@ import 'package:reminders_app/ui/box_menu.dart';
 import 'package:reminders_app/ui/note_page.dart';
 import 'package:reminders_app/ui/reminder_page.dart';
 import 'package:reminders_app/ui/theme.dart';
+import 'package:reminders_app/ui/weather_page.dart';
 import '../services/notif_services.dart';
 import '../services/themeServices.dart';
 
@@ -50,8 +51,10 @@ class _HomePage extends State<HomePage> {
                 await Get.to(NotePage());
               }),
           BoxMenu(
-            title: 'Recomendation',
-            onTap: () async {},
+            title: 'Weather Today',
+            onTap: () async {
+              await Get.to(WeatherPage());
+            },
           ),
         ],
       ),
