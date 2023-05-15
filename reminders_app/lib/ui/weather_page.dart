@@ -12,7 +12,6 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   List<WeatherData> weatherDataList = [];
-  bool isLoading = true;
 
   @override
   void initState() {
@@ -48,23 +47,19 @@ class _WeatherPageState extends State<WeatherPage> {
       appBar: AppBar(
         title: Text('Weather Page'),
       ),
-      body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(), // Tampilkan animasi loading
-            )
-          : ListView.builder(
-              itemCount: weatherDataList.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    leading: Image.network(weatherDataList[index].iconUrl),
-                    title: Text(weatherDataList[index].date),
-                    subtitle: Text(weatherDataList[index].condition),
-                    trailing: Text(weatherDataList[index].temperature),
-                  ),
-                );
-              },
+      body: ListView.builder(
+        itemCount: weatherDataList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: Image.network(weatherDataList[index].iconUrl),
+              title: Text(weatherDataList[index].date),
+              subtitle: Text(weatherDataList[index].condition),
+              trailing: Text(weatherDataList[index].temperature),
             ),
+          );
+        },
+      ),
     );
   }
 }
